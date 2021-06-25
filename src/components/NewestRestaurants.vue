@@ -4,41 +4,45 @@
       最新餐廳
     </div>
     <div class="card-body">
-      <div>
+      <div 
+        v-for="restaurant in restaurants" 
+        :key="restaurant.id"
+      >
         <h4>
-          <a href="#">Deangelo Farrell</a>
-          <small>中式料理</small>
+          <a href="#">{{ restaurant.name }} </a>
+          <small>{{ restaurant.Category ? restaurant.Category.name : '未分類'}}</small>
         </h4>
-        <p>Voluptates veritatis blanditiis ipsam. Tempora molestiae ut qui deserunt debitis sit. Impedit est rem. Blanditiis aliquid atque quo necessitatibus. Veniam sint explicabo. Est velit soluta.</p>11 days ago
-        <hr>
-      </div>
-      <div>
-        <h4>
-          <a href="#">Carter Howe</a>
-          <small>日本料理</small>
-        </h4>
-        <p>Voluptates veritatis blanditiis ipsam. Tempora molestiae ut qui deserunt debitis sit. Impedit est rem. Blanditiis aliquid atque quo necessitatibus. Veniam sint explicabo. Est velit soluta.</p>11 days ago
-        <hr>
-      </div>
-      <div>
-        <h4>
-          <a href="#">Dr. Carole Smith</a>
-          <small>義大利料理</small>
-        </h4>
-        <p>Voluptates veritatis blanditiis ipsam. Tempora molestiae ut qui deserunt debitis sit. Impedit est rem. Blanditiis aliquid atque quo necessitatibus. Veniam sint explicabo. Est velit soluta.</p>11 days ago
-        <hr>
-      </div>
-      <div>
-        <h4>
-          <a href="#">Nyah Bernier</a>
-          <small>素食料理</small>
-        </h4>
-        <p>Voluptates veritatis blanditiis ipsam. Tempora molestiae ut qui deserunt debitis sit. Impedit est rem. Blanditiis aliquid atque quo necessitatibus. Veniam sint explicabo. Est velit soluta.</p>11 days ago
+        <p>
+          {{restaurant.description}}
+        </p>
+        {{restaurant.createdAt | fromNow}}
         <hr>
       </div>
     </div>
   </div>
 </template>
+
+<script>
+import moment from 'moment'
+export default {
+  filters : {
+    fromNow(value) {
+      if(!value) {
+        return '-'
+      }
+
+      return moment(value).fromNow()
+    }
+  },
+  props: {
+    restaurants: {
+      type: Array,
+      required: true
+      //props只能做資料顯示，不能夠做資料的修改，要存成自己的組件才能修改。
+    }
+  }
+}
+</script>
 
 <style scoped>
 small {
