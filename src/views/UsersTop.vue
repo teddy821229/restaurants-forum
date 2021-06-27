@@ -13,7 +13,7 @@
       > 
         <a href="#">
           <img
-            :src="user.image"
+            :src="user.image | emptyImage"
             width="140px"
             height="140px"
           >
@@ -45,6 +45,7 @@
 
 <script>
 import NavTabs from '../components/NavTabs.vue'
+import { emptyImageFilter } from '../utils/mixins'
 
 const dummyData = 
   {
@@ -304,6 +305,7 @@ export default {
       })
     }
   },
+  mixins: [emptyImageFilter]
   
 }
 </script>

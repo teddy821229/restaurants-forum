@@ -3,7 +3,7 @@
         <div class="row no-gutters">
           <div class="col-md-4">
             <img 
-              :src="profile.image"
+              :src="profile.image | emptyImage"
               width="300px" 
               height="300px"
             >
@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import { emptyImageFilter } from '../utils/mixins'
 
 const dummyUser = {
   currentUser: {
@@ -82,6 +83,7 @@ export default {
     cancelFollowing(user) {
       this.$emit('after-cancel-following', user)
     }
-  }
+  },
+  mixins: [emptyImageFilter]
 }
 </script>
