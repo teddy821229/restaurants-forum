@@ -59,9 +59,6 @@ export default {
   beforeRouteUpdate(to, from, next) {
       const { page = '', categoryId = '' } = to.query
       this.fetchRestaurants({ queryPage: page, queryCategoryId: categoryId })
-      console.log('beforeRouteUpdate', {
-          to, from
-      })
       next()
   },
   methods: {
@@ -73,10 +70,8 @@ export default {
                  categoryId: queryCategoryId
              })
 
-             console.log('res', response)
-
              const { restaurants, categories, categoryId, page, totalPage, prev, next } = response.data
-             
+
              this.restaurants = restaurants
              this.categories = categories
              this.categoryId = categoryId
