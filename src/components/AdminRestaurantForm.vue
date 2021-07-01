@@ -1,5 +1,8 @@
 <template>
-  <form @submit.stop.prevent="handleSubmit">
+  <form 
+    v-show="!isLoading"
+    @submit.stop.prevent="handleSubmit"
+  >
     <div class="form-group">
       <label for="name">Name</label>
       <input
@@ -107,67 +110,16 @@
     <button
       type="submit"
       class="btn btn-primary"
+      :disabled="isProcessing"
     >
-      送出
+      {{ isProcessing ? '處理中' : '送出'}}
     </button>
   </form>
 </template>
 
 <script>
-
-const dummyData = 
-{
-  "categories": [
-        {
-            "id": 1,
-            "name": "中式料理",
-            "createdAt": "2021-05-17T05:11:05.000Z",
-            "updatedAt": "2021-05-17T05:11:05.000Z"
-        },
-        {
-            "id": 2,
-            "name": "日本料理",
-            "createdAt": "2021-05-17T05:11:05.000Z",
-            "updatedAt": "2021-05-17T05:11:05.000Z"
-        },
-        {
-            "id": 3,
-            "name": "義大利料理",
-            "createdAt": "2021-05-17T05:11:05.000Z",
-            "updatedAt": "2021-05-17T05:11:05.000Z"
-        },
-        {
-            "id": 4,
-            "name": "墨西哥料理",
-            "createdAt": "2021-05-17T05:11:05.000Z",
-            "updatedAt": "2021-05-17T05:11:05.000Z"
-        },
-        {
-            "id": 5,
-            "name": "素食料理",
-            "createdAt": "2021-05-17T05:11:05.000Z",
-            "updatedAt": "2021-05-17T05:11:05.000Z"
-        },
-        {
-            "id": 6,
-            "name": "美式料理",
-            "createdAt": "2021-05-17T05:11:05.000Z",
-            "updatedAt": "2021-05-17T05:11:05.000Z"
-        },
-        {
-            "id": 7,
-            "name": "複合式料理",
-            "createdAt": "2021-05-17T05:11:05.000Z",
-            "updatedAt": "2021-05-17T05:11:05.000Z"
-        },
-        {
-            "id": 11,
-            "name": "咒靈料理",
-            "createdAt": "2021-05-30T07:40:35.000Z",
-            "updatedAt": "2021-05-30T07:40:35.000Z"
-        }
-    ]
-}
+import adminAPI from './../apis/admin'
+import { Toast } from './../utils/helpers'
 
 export default {
   name: 'AdminRestaurantForm',
@@ -185,6 +137,10 @@ export default {
           categoryId: ''
         }
       }
+    },
+    isProcessing: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -192,15 +148,36 @@ export default {
       categories: [],
       restaurant: {
         ...this.initialRestaurant
-      }
+      },
+      isLoading: true
     }
   },
   created() {
     this.fetchCategories()
   },
+  watch: {
+    initialRestaurant(newValue) {
+      this.restaurant = {
+        ...this.restaurant,
+        ...newValue
+      }
+    }
+  },
+
   methods: {
-    fetchCategories() {
-      this.categories = dummyData.categories
+    async fetchCategories() {
+      try {
+        const { data } = await adminAPI.categories.get()
+        this.categories = data.categories
+        this.isLoading = false
+
+      } catch(error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法取得餐廳類別清單，請稍後再試。'
+        })
+      }
+      // this.categories = dummyData.categories
     },
     handleFileChange(e) {
       const { files } = e.target
@@ -211,6 +188,22 @@ export default {
       this.restaurant.image = imageURL
     },
     handleSubmit(e) {
+      if (!this.restaurant.name) {
+        Toast.fire({
+          icon:'warning',
+          title: '請填寫餐廳名稱。'
+        })
+        return
+      }
+
+      if(!this.restaurant.categoryId) {
+        Toast.fire({
+          icon: 'warning',
+          title: '請選擇餐廳類別。'
+        })
+        return
+      }
+
       const form = e.target
       const formData = new FormData(form)
       this.$emit('after-submit', formData)
