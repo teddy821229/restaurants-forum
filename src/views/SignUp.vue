@@ -17,7 +17,7 @@
           class="form-control"
           placeholder="name"
           autocomplete="username"
-          required
+
           autofocus
         >
       </div>
@@ -32,7 +32,7 @@
           class="form-control"
           placeholder="email"
           autocomplete="email"
-          required
+
         >
       </div>
 
@@ -46,7 +46,7 @@
           class="form-control"
           placeholder="Password"
           autocomplete="new-password"
-          required
+
         >
       </div>
 
@@ -60,7 +60,7 @@
           class="form-control"
           placeholder="Password"
           autocomplete="new-password"
-          required
+
         >
       </div>
 
@@ -87,6 +87,9 @@
 </template>
 
 <script>
+import authorizationAPI from './../apis/authorization'
+import { Toast } from './../utils/helpers'
+
 export default {
   data() {
     return {
@@ -97,14 +100,68 @@ export default {
     }
   },
   methods: {
-    handleSubmit() {
-      const data = JSON.stringify({
-        name: this.name,
-        email: this.email,
-        password: this.password,
-        passwordCheck: this.passwordCheck,
-      })
-      console.log('data', data)
+    async handleSubmit() {
+      try {
+        if(!this.name) {
+          Toast.fire({
+            icon: 'warning',
+            title: '請輸入姓名'
+          })
+          return
+        }
+
+        if(!this.email) {
+          Toast.fire({
+            icon: 'warning',
+            title: '請輸入信箱'
+          })
+          return
+        }
+
+        if(!this.password) {
+          Toast.fire({
+            icon: 'warning',
+            title: '請輸入密碼'
+          })
+          return
+        }
+
+        if(!this.passwordCheck) {
+          Toast.fire({
+            icon: 'warning',
+            title: '請確認密碼'
+          })
+          return
+        }
+
+        if(this.password !== this.passwordCheck) {
+          Toast.fire({
+            icon: 'warning',
+            title: '請確認密碼與確認密碼是否相同'
+          })
+          return
+        }
+        
+        const { data } = await authorizationAPI.signUp({ 
+          name: this.name,
+          email: this.email,
+          password: this.password,
+          passwordCheck: this.passwordCheck
+         })
+        console.log(data)
+
+        if(data.status === 'error') {
+          throw new Error(data.message)
+        }
+
+        this.$router.push({ name: 'sign-in'})
+
+      } catch(error) {
+        Toast.fire({
+          icon: 'error',
+          title: '註冊失敗，請稍後再試。'
+        })
+      }
     }
   }
 }

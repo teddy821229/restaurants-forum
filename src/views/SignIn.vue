@@ -83,7 +83,7 @@ export default {
 
         this.isProcessing = true
 
-        const response =  await authoriztionAPI.singIn({
+        const response =  await authoriztionAPI.signIn({
             email: this.email,
             password: this.password
         })

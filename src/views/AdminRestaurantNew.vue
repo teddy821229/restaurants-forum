@@ -41,10 +41,6 @@ export default {
         })
         
       }
-      //TODO: 透過API把formData往後端送
-      for( let [name, value] of formData.entries()) {
-        console.log(name + ': ' + value)
-      }
     }
   }
 }
