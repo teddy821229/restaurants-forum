@@ -60,6 +60,7 @@
 
 <script>
 import AdminNav from '../components/AdminNav.vue'
+import { mapState } from 'vuex'
 
 const dummyData = 
   {
@@ -301,14 +302,6 @@ const dummyData =
         }
     ]
 }
-const dummyUser = 
-  {
-    "id": 1,
-    "name": "root",
-    "email": "root@example.com",
-    "image": "https://i.imgur.com/eVfTIsY.jpg",
-    "isAdmin": false
-  }
 
 export default {
   name: 'AdminUsers',
@@ -318,16 +311,17 @@ export default {
   data() {
     return {
       users: [],
-      currentUser: {}
     }
   },
   created() {
     this.fetchUsers()
   },
+  computed: {
+    ...mapState(['currentUser'])
+  },
   methods: {
     fetchUsers() {
       this.users = dummyData.users
-      this.currentUser = dummyUser
     },
     toggleRole(userId) {
       this.users = this.users.map(user => {

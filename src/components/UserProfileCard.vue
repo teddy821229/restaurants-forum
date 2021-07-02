@@ -52,25 +52,10 @@
 
 <script>
 import { emptyImageFilter } from '../utils/mixins'
-
-const dummyUser = {
-  currentUser: {
-    id: 1,
-    name: '管理者',
-    email: 'root@example.com',
-    image: 'https://i.pravatar.cc/300',
-    isAdmin: true
-  },
-  isAuthenticated: true
-}
+import { mapState } from 'vuex'
 
 export default {
   name: 'UserProfileCard',
-  data() {
-    return {
-      currentUser: dummyUser.currentUser
-    }
-  },
   props: {
     profile: {
       type: Object,
@@ -80,6 +65,9 @@ export default {
       type: Boolean,
       required: true
     }
+  },
+  computed: {
+    ...mapState(['currentUser'])
   },
   methods: {
     addFollowing(user) {

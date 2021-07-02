@@ -36,17 +36,7 @@
 
 <script>
 import { fromNowFilter } from './../utils/mixins'
-
-const dummyUser = {
-  currentUser: {
-    id: 1,
-    name: '管理者',
-    email: 'root@example.com',
-    image: 'https://i.pravatar.cc/300',
-    isAdmin: true
-  },
-  isAuthenticated: true
-}
+import { mapState } from 'vuex'
 
 export default {
   name: 'RestaurantComments',
@@ -56,10 +46,8 @@ export default {
       required: true
     }
   },
-  data() {
-    return {
-      currentUser: dummyUser.currentUser
-    }
+  computed: {
+    ...mapState(['currentUser'])
   },
   methods: {
     handleDeleteButtonClick(commentId) {
