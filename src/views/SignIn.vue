@@ -62,6 +62,7 @@
 import authoriztionAPI from './../apis/authorization'
 import { Toast } from './../utils/helpers'
 
+
 export default {
   data() {
     return {
@@ -96,6 +97,11 @@ export default {
 
           //將伺服器回傳的 token 保存在 localStorage 中
         localStorage.setItem('token', data.token)
+
+        // 透過setCurrentUser 把使用者資料存進去 vuex 中的 state
+        // 透過 $store 呼叫 store -> index.js
+        // 透過 commit 呼叫 mutation 的 function
+        this.$store.commit('setCurrentUser', data.user)
 
           // 成功登入後進行轉址 
         this.$router.push('/restaurants')
