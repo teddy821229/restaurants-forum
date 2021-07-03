@@ -1,48 +1,119 @@
 <template>
   <div class="container py-5">
-    <UserForm 
-      :initial-profile="profile"
-      @after-submit="afterSubmit"
-    />
+    <form @submit.prevent.stop="handleSubmit">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input
+          id="name"
+          type="text"
+          name="name"
+          class="form-control"
+          placeholder="Enter Name"
+          required
+          v-model="profile.name"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="image">Image</label>
+        <img 
+          v-if="profile.image"
+          :src="profile.image"
+          class="d-block img-thumbnail mb-3"
+          width="200"
+          height="200"
+        >
+        <input
+          id="image"
+          type="file"
+          name="image"
+          accept="image/*"
+          class="form-control-file"
+          @change="handleFileChange"
+        >
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+      >
+        {{isProcessing ? "處理中" : "submit"}}
+      </button>
+    </form>
   </div>
 </template>
 
 <script>
-import UserForm from '../components/UserForm.vue'
-
-const dummyData = {
-  'profile': {
-    'id': 1,
-    'name': 'root',
-    'image': 'https://i.imgur.com/58ImzMM.png',
-  },
-}
+import { mapState } from 'vuex'
+import usersAPI from './../apis/users'
+import { Toast } from './../utils/helpers'
 
 export default {
   name: 'UserEdit',
-  components: {
-    UserForm
-  },
   data() {
     return {
       profile: {
         id: -1,
         name: '',
         image: ''
-      }
+      },
+      isProcessing: false
     }
   },
   created() {
-    this.fetchProfile()
+    const { id } = this.$route.params 
+    this.fetchUser(id)
+  },
+  computed: {
+    ...mapState(['currentUser'])
   },
   methods: {
-    fetchProfile() {
-      this.profile = dummyData.profile
-    },
-    afterSubmit(formData) {
-      for (let [name, value] of formData.entries()) {
-        console.log(name + ': ' + value)
+    async fetchUser(userId) {
+      try {
+        const { data, statusText } = await usersAPI.get({ userId }) 
+        console.log('data',data)
+        if(statusText !== 'OK') {
+          throw new Error()
+        }
+        const { profile } = data
+        const { id, name, image } = profile
+
+        this.profile = {
+          ...this.profile,
+          id,
+          name,
+          image
+        }
+
+      } catch(error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法取得資料，請稍後再試。'
+        })
       }
+    },
+    async handleSubmit(formData) {
+      try {
+        const { data } = await usersAPI.update({ userId: this.currentUser.id, formData})
+
+        if(data.status !== 'success') {
+          throw new Error(data.message)
+        }
+
+      } catch(error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法修改資料，請稍後再試。'
+        })
+      }
+    },
+    handleFileChange(e) {
+      const { files } = e.target
+      if(files.length === 0) {
+        this.profile.image = ""
+      }
+      const imageURL = window.URL.createObjectURL(files[0])
+      this.profile.image = imageURL
     }
   }
 }
