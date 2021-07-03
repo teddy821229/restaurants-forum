@@ -36,6 +36,7 @@
             <template v-if="user.id !== currentUser.id"> 
               <button
                 v-if="user.isAdmin"
+                :disabled="isProcessing"
                 type="button"
                 class="btn btn-link"
                 @click.prevent.stop="toggleRole(user)"
@@ -44,6 +45,7 @@
               </button>
               <button
                 v-else
+                :disabled="isProcessing"
                 type="button"
                 class="btn btn-link"
                 @click.prevent.stop="toggleRole(user)"
@@ -75,7 +77,8 @@ export default {
   data() {
     return {
       users: [],
-      isLoading: true
+      isLoading: true,
+      isProcessing: false
     }
   },
   created() {
@@ -104,6 +107,7 @@ export default {
     },
     async toggleRole(targetUser) {
       try {
+        this.isProcessing = true
         const changeAdmin = !targetUser.isAdmin
         const { data } = await adminAPI.users.toggleRole({ userId: targetUser.id, isAdmin: changeAdmin.toString() })
         console.log('data', data)
@@ -122,7 +126,9 @@ export default {
           return user
         })
 
+        this.isProcessing = false
       } catch(error) {
+        this.isProcessing = false
         Toast.fire({
           icon: 'error',
           title: '無法修改權限，請稍後再試。'

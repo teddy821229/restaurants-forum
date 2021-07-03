@@ -16,12 +16,20 @@
       </div>
 
       <RestaurantPagination 
+        v-if="totalPage.length > 1"
         :current-page="currentPage"
         :total-page="totalPage"
         :previous-page="previousPage"
         :next-page="nextPage"
         :category-id="categoryId"
       />
+
+      <div
+        v-if="restaurants.length < 1"
+        class="text-center"
+      >
+        <h3>此類別目前尚無任何餐廳資料</h3>
+      </div>
     </template>
   </div>
 </template>
@@ -55,7 +63,7 @@ export default {
       previousPage: -1,
       nextPage: -1,
       isLoading: true,
-      isLoadingCard: true
+      isLoadingCard: true,
     }
   },
   created () {

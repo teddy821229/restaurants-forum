@@ -33,12 +33,14 @@
               <template v-else>
                 <button 
                   v-if="isFollowed"
+                  :disabled="isProcessing"
                   type="button"
                   class="btn btn-danger"
                   @click.prevent.stop="cancelFollowing(profile)"
                 >取消追蹤</button>
                 <button
                   v-else
+                  :disabled="isProcessing"
                   type="button"
                   class="btn btn-primary"
                   @click.prevent.stop="addFollowing(profile)"
@@ -75,6 +77,7 @@ export default {
   data() {
     return {
       isFollowed: this.initialIsFollowed,
+      isProcessing: false
     }
   },
   watch: {
@@ -88,13 +91,15 @@ export default {
   methods: {
     async addFollowing(user) {
       try {
+        this.isProcessing = true
         const { data } = await usersAPI.addFollowing({ userId: user.id })
         if(data.status !== 'success') {
           throw new Error(data.message)
         }
         this.$emit('after-add-following', this.currentUser)
-
+        this.isProcessing = false
       } catch(error) {
+        this.isProcessing = false
         Toast.fire({
           icon: 'error',
           title: '無法追蹤用戶，請稍後再試。'
@@ -104,13 +109,15 @@ export default {
     },
     async cancelFollowing(user) {
       try {
+        this.isProcessing = true
         const { data } = await usersAPI.deleteFollowing({ userId: user.id})
         if(data.status !== 'success') {
           throw new Error(data.message)
         }
         this.$emit('after-cancel-following', this.currentUser)
-
+        this.isProcessing = false
       } catch(error) {
+        this.isProcessing = false
         Toast.fire({
           icon: 'error',
           title: '無法取消追蹤該用戶，請稍後再試。'

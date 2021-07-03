@@ -26,6 +26,7 @@
           <p class="mt-3">
             <button
               v-if="user.isFollowed"
+              :disabled="isProcessing"
               type="button"
               class="btn btn-danger"
               @click.prevent.stop="deleteFollowed(user)"
@@ -34,6 +35,7 @@
             </button>
             <button
               v-else
+              :disabled="isProcessing"
               type="button"
               class="btn btn-primary"
               @click.prevent.stop="addFollowed(user)"
@@ -70,7 +72,8 @@ export default {
         followerCount: 0,
         isFollowed: false
       }],
-      isLoading: true
+      isLoading: true,
+      isProcessing: false
     }
   },
   created () {
@@ -100,43 +103,64 @@ export default {
        }
     },
     async addFollowed(targetUser) {
-      
-      const { data } = await usersAPI.addFollowing({ userId: targetUser.id })
+      try {
+        this.isProcessing = true
+        const { data } = await usersAPI.addFollowing({ userId: targetUser.id })
 
-      if(data.status !== 'success') {
-        throw new Error(status.message)
-      }
-
-      this.users = this.users.map(user => {
-        if(user.id === targetUser.id) {
-          return {
-            ...user,
-            followerCount: user.followerCount + 1,
-            isFollowed: true
-          } 
-        } else {
-          return user
+        if(data.status !== 'success') {
+          throw new Error(status.message)
         }
-      })
+
+        this.users = this.users.map(user => {
+          if(user.id === targetUser.id) {
+            return {
+              ...user,
+              followerCount: user.followerCount + 1,
+              isFollowed: true
+            } 
+          } else {
+            return user
+          }
+        })
+
+        this.isProcessing = false
+      } catch(error) {
+        this.isProcessing = false
+        Toast.fire({
+          icon: 'error',
+          title: '無法追蹤使用者，請稍後再試。'
+        })
+      }
     },
     async deleteFollowed(targetUser) {
-      const { data } = await usersAPI.deleteFollowing({ userId: targetUser.id })
+      try {
+        this.isProcessing = true
+        const { data } = await usersAPI.deleteFollowing({ userId: targetUser.id })
 
-      if(data.status !== 'success') {
-        throw new Error(status.message)
-      }
-
-      this.users = this.users.map(user => {
-        if(user.id === targetUser.id) {
-          return {
-            ...user,
-            followerCount: user.followerCount - 1,
-            isFollowed: false
-          } 
-        } else {
-          return user
+        if(data.status !== 'success') {
+          throw new Error(status.message)
         }
-      })
+
+        this.users = this.users.map(user => {
+          if(user.id === targetUser.id) {
+            return {
+              ...user,
+              followerCount: user.followerCount - 1,
+              isFollowed: false
+            } 
+          } else {
+            return user
+          }
+        })
+
+        this.isProcessing = false
+      } catch(error) {
+        this.isProcessing = false
+        Toast.fire({
+          icon: 'error',
+          title: '無法追蹤使用者，請稍後再試。'
+        })
+      }
     }
   },
   mixins: [emptyImageFilter]

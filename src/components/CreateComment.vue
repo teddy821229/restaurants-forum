@@ -8,7 +8,13 @@
       <button type="button" class="btn btn-link" @click="$router.back()">
         回上一頁
       </button>
-      <button type="submit" class="btn btn-primary mr-0">Submit</button>
+      <button 
+        :disabled="isProcessing"
+        type="submit" 
+        class="btn btn-primary mr-0"
+      >
+        {{ isProcessing ? '處理中' : 'submit'}}
+      </button>
     </div>
   </form>
 </template>
@@ -28,16 +34,19 @@ export default {
   data() {
     return {
       text: "",
+      isProcessing: false
     };
   },
   methods: {
     async handleSubmit() {
       try {
+        this.isProcessing = true
         if (!this.text) {
           Toast.fire({
             icon: "warning",
             title: "您尚未填寫評論唷！",
           });
+          this.isProcessing = false
           return;
         }
 
@@ -57,7 +66,9 @@ export default {
         });
 
         this.text = "";
+        this.isProcessing = false
       } catch (error) {
+        this.isProcessing = false
         Toast.fire({
           icon: "error",
           title: "新增評論失敗，請稍後再試。",

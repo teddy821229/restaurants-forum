@@ -11,11 +11,12 @@
       <blockquote class="blockquote mb-0">
         <button
           v-if="currentUser.isAdmin"
+          :disabled="isProcessing"
           type="button"
           class="btn btn-danger float-right"
           @click.prevent.stop="handleDeleteButtonClick(comment.id)"
         >
-          Delete
+          {{isProcessing ? '處理中' : 'Delete'}}
         </button>
         <h3>
           <router-link 
@@ -48,6 +49,11 @@ export default {
       required: true
     }
   },
+  data () {
+    return {
+      isProcessing: false
+    }
+  },
   // for show delete function, need to know whether currentUser is Admin.
   computed: {
     ...mapState(['currentUser'])
@@ -55,6 +61,7 @@ export default {
   methods: {
     async handleDeleteButtonClick(commentId) {
       try { 
+        this.isProcessing = true
         const { data } = await commentsAPI.delete({ commentId })
         console.log('data', data)
 
@@ -63,8 +70,9 @@ export default {
         }
 
         this.$emit('after-delete-comment', commentId)
-
+        this.isProcessing = false
       } catch(error) {
+        this.isProcessing = false
         Toast.fire({
           icon: 'error',
           title: '無法刪除留言，請稍後再試。'
