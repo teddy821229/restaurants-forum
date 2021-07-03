@@ -14,7 +14,8 @@ export default new Vuex.Store({
       image: '',
       isAdmin: false
     },
-    isAuthenticated: false
+    isAuthenticated: false,
+    token: ''
   },
   // 用來修改 STATE -> 類似 vue 內的 methods。
   mutations: {
@@ -25,6 +26,13 @@ export default new Vuex.Store({
       }
 
       state.isAuthenticated = true
+      state.token = localStorage.getItem('token')
+    },
+    revokeAuthentication (state) {
+      state.currentUser = {}
+      state.isAuthenticated = false
+      state.token = ''
+      localStorage.removeItem('token')
     }
   },
   //透過 API 請求資料的 methods
@@ -43,8 +51,12 @@ export default new Vuex.Store({
         commit('setCurrentUser', {
           id, name, email, image, isAdmin
         })
+
+        return true
       } catch(error) {
+        commit('revokeAuthentication')
         console.error(error.message)
+        return false
       }
     }
   },
