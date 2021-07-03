@@ -1,6 +1,7 @@
 <template>
   <div class="album py-5 bg-light">
-    <div class="container">
+    <Spinner v-if="isLoading" />
+    <div class="container" v-else>
       <UserProfileCard
         :profile="profile"
         :initial-is-followed="isFollowed"
@@ -38,6 +39,7 @@ import UserFollowingsCard from "../components/UserFollowingsCard.vue";
 import UserFollowersCard from "../components/UserFollowersCard.vue";
 import UserCommentsCard from "../components/UserCommentsCard.vue";
 import UserFavoritedRestaurantCard from "../components/UserFavoritedRestaurantCard.vue";
+import Spinner from './../components/Spinner.vue'
 import usersAPI from "./../apis/users";
 import { Toast } from "./../utils/helpers";
 import { mapState } from "vuex";
@@ -50,6 +52,7 @@ export default {
     UserFollowersCard,
     UserCommentsCard,
     UserFavoritedRestaurantCard,
+    Spinner
   },
   data() {
     return {
@@ -66,7 +69,8 @@ export default {
       followers: [],
       comments: [],
       favoritedRestaurants: [],
-      isFollowed: false
+      isFollowed: false,
+      isLoading: true
     };
   },
   created() {
@@ -120,7 +124,10 @@ export default {
           this.comments = Comments
           this.favoritedRestaurants = FavoritedRestaurants;
           this.isFollowed = isFollowed;
+
+          this.isLoading = false
       } catch (error) {
+        this.isLoading = false
         Toast.fire({
           icon: "error",
           title: "無法取得使用者資料，請稍後再試。",

@@ -1,6 +1,6 @@
 <template>
  <div class="container py-5">
-    <AdminRestaurantForm 
+   <AdminRestaurantForm 
       @after-submit="handleAfterSubmit"
       :is-processing="isProcessing"
     />
@@ -16,11 +16,11 @@ export default {
   name: 'AdminRestaurantNew',
   data() {
     return {
-      isProcessing: false
+      isProcessing: false,
     }
   },
   components: {
-    AdminRestaurantForm
+    AdminRestaurantForm,
   },
   methods: {
     async handleAfterSubmit(formData) {

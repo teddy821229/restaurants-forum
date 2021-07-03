@@ -1,15 +1,19 @@
 <template>
   <div class="container py-5">
-    <RestaurantDetail :initial-restaurant="restaurant" />
-    <hr />
-    <RestaurantComments
-      :restaurant-comments="restaurantComments"
-      @after-delete-comment="afterDeleteComment"
-    />
-    <CreateComment
-      :restaurantId="restaurant.id"
-      @after-create-comment="afterCreateComment"
-    />
+    <Spinner v-if="isLoading"/>
+    <template v-else>
+
+      <RestaurantDetail :initial-restaurant="restaurant" />
+      <hr />
+      <RestaurantComments
+        :restaurant-comments="restaurantComments"
+        @after-delete-comment="afterDeleteComment"
+      />
+      <CreateComment
+        :restaurantId="restaurant.id"
+        @after-create-comment="afterCreateComment"
+      />
+    </template>
   </div>
 </template>
 
@@ -17,6 +21,7 @@
 import RestaurantDetail from "../components/RestaurantDetail.vue";
 import RestaurantComments from "../components/RestaurantComments.vue";
 import CreateComment from "../components/CreateComment.vue";
+import Spinner from './../components/Spinner.vue'
 import restaurantsAPI from "./../apis/restaurants";
 import { Toast } from "./../utils/helpers";
 import { mapState } from 'vuex'
@@ -28,6 +33,7 @@ export default {
     RestaurantDetail,
     RestaurantComments,
     CreateComment,
+    Spinner
   },
   data() {
     return {
@@ -44,6 +50,7 @@ export default {
         isLiked: false,
       },
       restaurantComments: [],
+      isLoading: true
     };
   },
   created() {
@@ -90,7 +97,10 @@ export default {
         },
 
         this.restaurantComments = Comments;
+
+        this.isLoading = false
       } catch (error) {
+        this.isLoading = false
         Toast.fire({
           icon: "error",
           title: "無法取得餐廳詳細資料，請稍後再試。",

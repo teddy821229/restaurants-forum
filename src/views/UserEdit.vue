@@ -1,6 +1,10 @@
 <template>
   <div class="container py-5">
-    <form @submit.prevent.stop="handleSubmit">
+    <Spinner v-if="isLoading" />
+    <form 
+      v-else
+      @submit.prevent.stop="handleSubmit"
+    >
       <div class="form-group">
         <label for="name">Name</label>
         <input
@@ -45,12 +49,16 @@
 </template>
 
 <script>
+import Spinner from './../components/Spinner.vue'
 import { mapState } from 'vuex'
 import usersAPI from './../apis/users'
 import { Toast } from './../utils/helpers'
 
 export default {
   name: 'UserEdit',
+  components: {
+    Spinner
+  },
   data() {
     return {
       profile: {
@@ -58,7 +66,8 @@ export default {
         name: '',
         image: ''
       },
-      isProcessing: false
+      isProcessing: false,
+      isLoading: true
     }
   },
   created() {
@@ -92,7 +101,10 @@ export default {
           name,
           image
         }
+
+        this.isLoading = false
       } catch(error) {
+        this.isLoading = false
         Toast.fire({
           icon: 'error',
           title: '無法取得資料，請稍後再試。'

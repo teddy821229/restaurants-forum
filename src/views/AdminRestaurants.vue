@@ -8,7 +8,6 @@
     >
       New Restaurant
     </router-link>
-
     <AdminRestaurantTable />
   </div>
 </template>
@@ -21,7 +20,7 @@ export default {
   name: 'AdminRestaurants',
   components: {
     AdminNav,
-    AdminRestaurantTable
+    AdminRestaurantTable,
   }
 }
 </script>

@@ -17,7 +17,7 @@ import { Toast } from './../utils/helpers'
 export default {
   name: 'AdminRestaurantEdit',
   components: {
-    AdminRestaurantForm
+    AdminRestaurantForm,
   },
   data() {
     return {
@@ -31,7 +31,7 @@ export default {
         image: '',
         categoryId: ''
       },
-      isProcessing: false
+      isProcessing: false,
     }
   },
   created() {
@@ -61,7 +61,6 @@ export default {
           categoryId: CategoryId,
         }
       } catch(error) {
-        //console.log(error) => 方便查看錯誤
         Toast.fire({
           icon: 'error',
           title: '無法取得餐廳資料，請稍後再試。'
