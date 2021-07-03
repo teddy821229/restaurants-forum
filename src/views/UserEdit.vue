@@ -36,6 +36,7 @@
       <button
         type="submit"
         class="btn btn-primary"
+        :disabled="isProcessing"
       >
         {{isProcessing ? "處理中" : "submit"}}
       </button>
@@ -64,6 +65,13 @@ export default {
     const { id } = this.$route.params 
     this.fetchUser(id)
   },
+  beforeRouteUpdate(to, from, next) {
+    const { id } = to.params
+    if(this.currentUser.id !== id) {
+      this.$router.push({ name: 'not-found' })
+    }
+    next()
+  },
   computed: {
     ...mapState(['currentUser'])
   },
@@ -71,7 +79,7 @@ export default {
     async fetchUser(userId) {
       try {
         const { data, statusText } = await usersAPI.get({ userId }) 
-        console.log('data',data)
+
         if(statusText !== 'OK') {
           throw new Error()
         }
@@ -84,7 +92,6 @@ export default {
           name,
           image
         }
-
       } catch(error) {
         Toast.fire({
           icon: 'error',
@@ -92,15 +99,20 @@ export default {
         })
       }
     },
-    async handleSubmit(formData) {
+    async handleSubmit(e) {
       try {
+        this.isProcessing = true
+        const form = e.target
+        const formData = new FormData(form)
         const { data } = await usersAPI.update({ userId: this.currentUser.id, formData})
 
         if(data.status !== 'success') {
           throw new Error(data.message)
         }
+        this.$router.push( { name: 'user',  params: { id: this.currentUser.id }})
 
       } catch(error) {
+        this.isProcessing = false
         Toast.fire({
           icon: 'error',
           title: '無法修改資料，請稍後再試。'

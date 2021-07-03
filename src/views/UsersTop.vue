@@ -74,7 +74,7 @@ export default {
      async fetchUsers() {
        try {
          const { data } = await usersAPI.getTopUsers()
-         console.log('data', data)
+
          this.users = data.users.map(user => ({
            id: user.id,
            name: user.name,
