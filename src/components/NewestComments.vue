@@ -5,7 +5,7 @@
     </div>
     <div class="card-body">
       <div 
-        v-for="comment in comments"
+        v-for="comment in commentAdjust"
         :key="comment.id"
       >
         <h4>
@@ -38,5 +38,10 @@ export default {
       required: true
     }
   },
+  computed: {
+    commentAdjust() {
+      return this.comments.filter(comment => comment.Restaurant && comment.User)
+    }
+  }
 }
 </script>

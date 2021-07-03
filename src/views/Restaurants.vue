@@ -31,6 +31,7 @@ import RestaurantNavPills from '../components/RestaurantNavPills.vue'
 import RestaurantPagination from '../components/RestaurantsPagination.vue'
 import restaurantsAPI from '../apis/restaurants'
 import { Toast } from '../utils/helpers'
+import { mapState } from 'vuex'
 
 export default {
   name: 'restaurants',
@@ -60,6 +61,9 @@ export default {
       const { page = '', categoryId = '' } = to.query
       this.fetchRestaurants({ queryPage: page, queryCategoryId: categoryId })
       next()
+  },
+  computed: {
+    ...mapState(['currentUser'])
   },
   methods: {
      async fetchRestaurants ({ queryPage, queryCategoryId }) {
