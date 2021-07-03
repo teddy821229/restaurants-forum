@@ -113,7 +113,7 @@ export default {
           name: this.currentUser.name,
         },
         text,
-        createdAt: new Date(),
+        createdAt: new Date()
       });
     },
   },

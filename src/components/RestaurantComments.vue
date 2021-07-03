@@ -19,7 +19,7 @@
         </button>
         <h3>
           <router-link 
-            :to="{ name: 'user', params: { id: comment.UserId }}"
+            :to="{ name: 'user', params: { id: comment.User.id }}"
           >
             {{comment.User.name}}
           </router-link>
@@ -37,6 +37,8 @@
 <script>
 import { fromNowFilter } from './../utils/mixins'
 import { mapState } from 'vuex'
+import commentsAPI from './../apis/comments'
+import { Toast } from './../utils/helpers'
 
 export default {
   name: 'RestaurantComments',
@@ -46,16 +48,29 @@ export default {
       required: true
     }
   },
+  // for show delete function, need to know whether currentUser is Admin.
   computed: {
     ...mapState(['currentUser'])
   },
   methods: {
-    handleDeleteButtonClick(commentId) {
-      // console.log('handleDeleteButtonClick', commentId)
+    async handleDeleteButtonClick(commentId) {
+      try { 
+        const { data } = await commentsAPI.delete({ commentId })
+        console.log('data', data)
 
-      //TODO: 透過 API 請求伺服器刪掉該筆comment
+        if(data.status !== 'success') {
+          throw new Error(data.message)
+        }
 
-      this.$emit('after-delete-comment', commentId)
+        this.$emit('after-delete-comment', commentId)
+
+      } catch(error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法刪除留言，請稍後再試。'
+        })
+      }
+
     }
   },
   mixins: [fromNowFilter]
